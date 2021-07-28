@@ -115,17 +115,25 @@ public interface IBungeeBridge {
 
     /**
      * Gets the UUID of the specified player
+     * @deprecated Method is redundant if you have bungeecord (in the spigot.yml)
+     * and ip-forwarding (in the BungeeCord config.yml) both to true
+     *
      * @param player The player whose UUID will be returned
      * @return The UUID of the player as a Future
      */
+    @Deprecated
     Future<UUID> getUUID(@NotNull Player player);
 
     /**
      * Gets the UUID of the specified player
+     * @deprecated Method is redundant if you have bungeecord (in the spigot.yml)
+     * and ip-forwarding (in the BungeeCord config.yml) both to true
+     *
      * @param player The player that will executes the event (can be any player)
      * @param playerName The name of the player whose UUID will be returned
      * @return The UUID of the player as a Future
      */
+    @Deprecated
     Future<UUID> getUUID(@NotNull Player player, @NotNull String playerName);
 
     /**
