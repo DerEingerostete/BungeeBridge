@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Future;
 
 public interface IBungeeBridge {
 
@@ -30,41 +29,41 @@ public interface IBungeeBridge {
     /**
      * Gets the (real) IP of a player
      * @param player The player you wish to get the IP of
-     * @return The IP of the player as a Future
+     * @return The IP of the player as a FutureResult
      */
-    Future<IPAddress> getPlayerIP(@NotNull Player player);
+    FutureResult<IPAddress> getPlayerIP(@NotNull Player player);
 
     /**
      * Gets the (real) IP of another player
      * @param player The player that will executes the event (can be any player)
      * @param playerName The username of the player you wish to get the IP of
-     * @return The IP of the player as a Future
+     * @return The IP of the player as a FutureResult
      */
-    Future<IPAddress> getPlayerIP(@NotNull Player player, @NotNull String playerName);
+    FutureResult<IPAddress> getPlayerIP(@NotNull Player player, @NotNull String playerName);
 
     /**
      * Get the amount of players on a certain server, or on ALL the servers
      * @param player The player that will executes the event (can be any player)
      * @param serverName The name of the server to get the player count of, or ALL to get the global player count
-     * @return The amount of players as a Future
+     * @return The amount of players as a FutureResult
      */
-    Future<Integer> getPlayerCount(@NotNull Player player, @NotNull String serverName);
+    FutureResult<Integer> getPlayerCount(@NotNull Player player, @NotNull String serverName);
 
     /**
      * Get a list of players connected on a certain server, or on ALL of the servers.
      * @param player The player that will executes the event (can be any player)
      * @param serverName The name of the server to get the list of
      *                   connected players, or ALL for global online player list
-     * @return List of players as a Future
+     * @return List of players as a FutureResult
      */
-    Future<List<String>> getPlayerList(@NotNull Player player, @NotNull String serverName);
+    FutureResult<List<String>> getPlayerList(@NotNull Player player, @NotNull String serverName);
 
     /**
      * Get a list of server names, as defined in BungeeCord's config.yml
      * @param player The player that will executes the event (can be any player)
-     * @return List of server names as a Future
+     * @return List of server names as a FutureResult
      */
-    Future<List<String>> getServerList(@NotNull Player player);
+    FutureResult<List<String>> getServerList(@NotNull Player player);
 
     /**
      * Send a message (as in, a chat message) to the specified player
@@ -85,9 +84,9 @@ public interface IBungeeBridge {
     /**
      * Get this server's name, as defined in BungeeCord's config.yml
      * @param player The player that will executes the event (can be any player)
-     * @return The server name as a Future
+     * @return The server name as a FutureResult
      */
-    Future<String> getCurrentServer(@NotNull Player player);
+    FutureResult<String> getCurrentServer(@NotNull Player player);
 
     /**
      * Send a custom plugin message to said server. This is one of the most useful channels ever
@@ -119,10 +118,10 @@ public interface IBungeeBridge {
      * and ip-forwarding (in the BungeeCord config.yml) both to true
      *
      * @param player The player whose UUID will be returned
-     * @return The UUID of the player as a Future
+     * @return The UUID of the player as a FutureResult
      */
     @Deprecated
-    Future<UUID> getUUID(@NotNull Player player);
+    FutureResult<UUID> getUUID(@NotNull Player player);
 
     /**
      * Gets the UUID of the specified player
@@ -131,18 +130,18 @@ public interface IBungeeBridge {
      *
      * @param player The player that will executes the event (can be any player)
      * @param playerName The name of the player whose UUID will be returned
-     * @return The UUID of the player as a Future
+     * @return The UUID of the player as a FutureResult
      */
     @Deprecated
-    Future<UUID> getUUID(@NotNull Player player, @NotNull String playerName);
+    FutureResult<UUID> getUUID(@NotNull Player player, @NotNull String playerName);
 
     /**
      * Gets the IP of any server on this proxy
      * @param player The player that will executes the event (can be any player)
      * @param serverName The name of the server whose IP will be returned
-     * @return The server IP as a Future
+     * @return The server IP as a FutureResult
      */
-    Future<IPAddress> getServerIP(@NotNull Player player, @NotNull String serverName);
+    FutureResult<IPAddress> getServerIP(@NotNull Player player, @NotNull String serverName);
 
     /**
      * Kick any player on this proxy
