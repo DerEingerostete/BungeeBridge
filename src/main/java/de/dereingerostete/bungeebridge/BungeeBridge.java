@@ -92,6 +92,9 @@ public class BungeeBridge implements IBungeeBridge {
     public FutureResult<IPAddress> getPlayerIP(@NotNull Player player) {
         FutureResult<IPAddress> result = new FutureResult<>(Request.IP);
         handler.addToQueue(result);
+
+        byte[] message = DataUtils.fromStrings("IP");
+        sendPluginMessage(player, message);
         return result;
     }
 
@@ -99,6 +102,9 @@ public class BungeeBridge implements IBungeeBridge {
     public FutureResult<IPAddress> getPlayerIP(@NotNull Player player, @NotNull String playerName) {
         FutureResult<IPAddress> result = new FutureResult<>(Request.IP_OTHER);
         handler.addToQueue(result);
+
+        byte[] message = DataUtils.fromStrings("IPOther", playerName);
+        sendPluginMessage(player, message);
         return result;
     }
 
@@ -106,6 +112,9 @@ public class BungeeBridge implements IBungeeBridge {
     public FutureResult<Integer> getPlayerCount(@NotNull Player player, @NotNull String serverName) {
         FutureResult<Integer> result = new FutureResult<>(Request.PLAYER_COUNT);
         handler.addToQueue(result);
+
+        byte[] message = DataUtils.fromStrings("PlayerCount", serverName);
+        sendPluginMessage(player, message);
         return result;
     }
 
@@ -113,6 +122,9 @@ public class BungeeBridge implements IBungeeBridge {
     public FutureResult<List<String>> getPlayerList(@NotNull Player player, @NotNull String serverName) {
         FutureResult<List<String>> result = new FutureResult<>(Request.PLAYER_LIST);
         handler.addToQueue(result);
+
+        byte[] message = DataUtils.fromStrings("PlayerList", serverName);
+        sendPluginMessage(player, message);
         return result;
     }
 
@@ -120,6 +132,9 @@ public class BungeeBridge implements IBungeeBridge {
     public FutureResult<List<String>> getServerList(@NotNull Player player) {
         FutureResult<List<String>> result = new FutureResult<>(Request.GET_SERVERS);
         handler.addToQueue(result);
+
+        byte[] message = DataUtils.fromStrings("GetServers");
+        sendPluginMessage(player, message);
         return result;
     }
 
@@ -149,6 +164,9 @@ public class BungeeBridge implements IBungeeBridge {
     public FutureResult<String> getCurrentServer(@NotNull Player player) {
         FutureResult<String> result = new FutureResult<>(Request.GET_SERVER);
         handler.addToQueue(result);
+
+        byte[] message = DataUtils.fromStrings("GetServer");
+        sendPluginMessage(player, message);
         return result;
     }
 
@@ -198,6 +216,9 @@ public class BungeeBridge implements IBungeeBridge {
     public FutureResult<UUID> getUUID(@NotNull Player player) {
         FutureResult<UUID> result = new FutureResult<>(Request.UUID);
         handler.addToQueue(result);
+
+        byte[] message = DataUtils.fromStrings("UUID");
+        sendPluginMessage(player, message);
         return result;
     }
 
@@ -206,6 +227,9 @@ public class BungeeBridge implements IBungeeBridge {
     public FutureResult<UUID> getUUID(@NotNull Player player, @NotNull String playerName) {
         FutureResult<UUID> result = new FutureResult<>(Request.UUID_OTHER);
         handler.addToQueue(result);
+
+        byte[] message = DataUtils.fromStrings("UUIDOther");
+        sendPluginMessage(player, message);
         return result;
     }
 
@@ -213,6 +237,9 @@ public class BungeeBridge implements IBungeeBridge {
     public FutureResult<IPAddress> getServerIP(@NotNull Player player, @NotNull String serverName) {
         FutureResult<IPAddress> result = new FutureResult<>(Request.SERVER_IP);
         handler.addToQueue(result);
+
+        byte[] message = DataUtils.fromStrings("ServerIP", serverName);
+        sendPluginMessage(player, message);
         return result;
     }
 
@@ -233,7 +260,7 @@ public class BungeeBridge implements IBungeeBridge {
         messenger.unregisterOutgoingPluginChannel(plugin, channelName);
     }
 
-    protected void sendPluginMessage(Player player, byte[] bytes) {
+    protected void sendPluginMessage(@NotNull Player player, byte[] bytes) {
         player.sendPluginMessage(plugin, channelName, bytes);
     }
 

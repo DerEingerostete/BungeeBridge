@@ -1,5 +1,10 @@
 package de.dereingerostete.bungeebridge.util;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@EqualsAndHashCode
+@ToString
 public class IPAddress {
     private final String ipAddress;
     private final int port;

@@ -1,6 +1,8 @@
 package de.dereingerostete.bungeebridge.handler;
 
 import com.google.common.collect.Lists;
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
 import de.dereingerostete.bungeebridge.util.FutureResult;
 import de.dereingerostete.bungeebridge.util.IPAddress;
 import de.dereingerostete.bungeebridge.util.Request;
@@ -9,10 +11,6 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -41,10 +39,10 @@ public class BungeeMessageHandler implements PluginMessageListener {
         if (!added) warn("Failed to add FutureResult to queue");
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] bytes) {
         if (!channel.equals(channelName)) return;
-
         FutureResult<Object> result = futureQueue.poll();
         if (result == null) {
             warn("Missed PluginMessage: No request was given");
@@ -52,10 +50,18 @@ public class BungeeMessageHandler implements PluginMessageListener {
         }
 
         try {
-            InputStream inputStream = new ByteArrayInputStream(bytes);
-            DataInputStream dataInput = new DataInputStream(inputStream);
+            ByteArrayDataInput dataInput = ByteStreams.newDataInput(bytes);
+            String subChannel = dataInput.readUTF();
 
             Request request = result.getRequest();
+            String requestChannelName = request.getChannelName();
+            if (!subChannel.equals(requestChannelName)) {
+                warn("SubChannel(" + subChannel + ") did not match request(" + requestChannelName + ")");
+                result.setThrowable(new IllegalStateException(
+                        "SubChannel(" + subChannel + ") did not match request"));
+                return;
+            }
+
             switch (request) {
                 case IP:
                     answerIP(result, dataInput);
@@ -86,15 +92,18 @@ public class BungeeMessageHandler implements PluginMessageListener {
                     break;
                 default:
                     warn("Missed PluginMessage: Request '" + request.name() + "' is unknown");
+                    result.setThrowable(new IllegalStateException("Unknown request: " + request.name()));
                     break;
             }
-        } catch (IOException exception) {
-            if (!logActions) logger.log(Level.WARNING,
-                    "[BungeeBridge] Missed PluginMessage: IOException was thrown", exception);
+        } catch (Throwable throwable) {
+            result.setThrowable(throwable);
+            if (logActions) logger.log(Level.WARNING,
+                    "[BungeeBridge] Missed PluginMessage: Exception was thrown", throwable);
         }
     }
 
-    private void answerServerIP(FutureResult<Object> result, DataInputStream dataInput) throws IOException {
+    private void answerServerIP(@NotNull FutureResult<Object> result,
+                                @NotNull ByteArrayDataInput dataInput) {
         dataInput.readUTF(); //Reads the serverName
         String ip = dataInput.readUTF();
         int port = dataInput.readUnsignedShort();
@@ -103,7 +112,8 @@ public class BungeeMessageHandler implements PluginMessageListener {
         result.finish(address);
     }
 
-    private void answerUUIDOther(FutureResult<Object> result, DataInputStream dataInput) throws IOException {
+    private void answerUUIDOther(@NotNull FutureResult<Object> result,
+                                 @NotNull ByteArrayDataInput dataInput) {
         dataInput.readUTF(); //Reads the username
         String uuidString = dataInput.readUTF();
 
@@ -111,24 +121,28 @@ public class BungeeMessageHandler implements PluginMessageListener {
         result.finish(uuid);
     }
 
-    private void answerUUID(FutureResult<Object> result, DataInputStream dataInput) throws IOException {
+    private void answerUUID(@NotNull FutureResult<Object> result,
+                            @NotNull ByteArrayDataInput dataInput) {
         String uuidString = dataInput.readUTF();
         UUID uuid = UUID.fromString(uuidString);
         result.finish(uuid);
     }
 
-    private void answerGetServer(FutureResult<Object> result, DataInputStream dataInput) throws IOException {
+    private void answerGetServer(@NotNull FutureResult<Object> result,
+                                 @NotNull ByteArrayDataInput dataInput) {
         String name = dataInput.readUTF();
         result.finish(name);
     }
 
-    private void answerGetServers(FutureResult<Object> result, DataInputStream dataInput) throws IOException {
+    private void answerGetServers(@NotNull FutureResult<Object> result,
+                                  @NotNull ByteArrayDataInput dataInput) {
         String[] serverNames = dataInput.readUTF().split(", ");
         List<String> list = Lists.newArrayList(serverNames);
         result.finish(list);
     }
 
-    private void answerPlayerList(FutureResult<Object> result, DataInputStream dataInput) throws IOException {
+    private void answerPlayerList(@NotNull FutureResult<Object> result,
+                                  @NotNull ByteArrayDataInput dataInput) {
         dataInput.readUTF(); //Reads the server name
         String[] playerNames = dataInput.readUTF().split(", ");
 
@@ -136,13 +150,15 @@ public class BungeeMessageHandler implements PluginMessageListener {
         result.finish(list);
     }
 
-    private void answerPlayerCount(FutureResult<Object> result, DataInputStream dataInput) throws IOException {
+    private void answerPlayerCount(@NotNull FutureResult<Object> result,
+                                   @NotNull ByteArrayDataInput dataInput) {
         dataInput.readUTF(); //Reads the server name
         int playerCount = dataInput.readInt();
         result.finish(playerCount);
     }
 
-    private void answerIPOther(FutureResult<Object> result, DataInputStream dataInput) throws IOException {
+    private void answerIPOther(@NotNull FutureResult<Object> result,
+                               @NotNull ByteArrayDataInput dataInput) {
         dataInput.readUTF(); //Reads the username
         String ip = dataInput.readUTF();
         int port = dataInput.readInt();
@@ -151,7 +167,8 @@ public class BungeeMessageHandler implements PluginMessageListener {
         result.finish(address);
     }
 
-    private void answerIP(FutureResult<Object> result, DataInputStream dataInput) throws IOException {
+    private void answerIP(@NotNull FutureResult<Object> result,
+                          @NotNull ByteArrayDataInput dataInput) {
         String ip = dataInput.readUTF();
         int port = dataInput.readInt();
 
@@ -159,8 +176,8 @@ public class BungeeMessageHandler implements PluginMessageListener {
         result.finish(address);
     }
 
-    protected void warn(String message) {
-        if (!logActions) logger.warning("[BungeeBridge] " + message);
+    protected void warn(@NotNull String message) {
+        if (logActions) logger.warning("[BungeeBridge] " + message);
     }
 
 }

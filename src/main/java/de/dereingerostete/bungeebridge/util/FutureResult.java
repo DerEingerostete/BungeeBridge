@@ -1,17 +1,24 @@
 package de.dereingerostete.bungeebridge.util;
 
-public class FutureResult<T> {
-    protected final Request request;
-    protected boolean done;
-    protected T result;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-    public FutureResult(Request request) {
+@Getter
+@ToString
+@EqualsAndHashCode
+public class FutureResult<T> {
+    protected final @NotNull Request request;
+    protected @Nullable Throwable throwable;
+    protected @Nullable T result;
+    protected boolean done;
+
+    public FutureResult(@NotNull Request request) {
         this.request = request;
         done = false;
-    }
-
-    public Request getRequest() {
-        return request;
     }
 
     public void finish(T result) {
@@ -19,12 +26,10 @@ public class FutureResult<T> {
         done = true;
     }
 
-    public boolean isDone() {
-        return done;
-    }
-
-    public T getResult() {
-        return result;
+    @ApiStatus.Internal
+    public void setThrowable(@NotNull Throwable throwable) {
+        this.throwable = throwable;
+        done = true;
     }
 
 }
