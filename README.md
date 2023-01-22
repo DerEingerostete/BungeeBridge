@@ -17,5 +17,3 @@ An API that makes it easier to use the PluginMessagingChannel
     <version>1.2.6</version>
 </dependency>
 ```
-
-*Full ReadMe maybe coming in the future*
