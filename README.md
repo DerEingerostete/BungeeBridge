@@ -1,5 +1,5 @@
 # BungeeBridge
-An API that makes it easier to use the PluginMessagingChannel
+A library that makes it easier to use the PluginMessagingChannel
 
 ### Maven:
 ```xml
